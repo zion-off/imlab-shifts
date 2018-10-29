@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Title of the shifts</title>
+    <title>IM Lab Monitor Shifts</title>
+    <meta charset="UTF-8">
     <style>
       * {
         padding: 0;
@@ -13,8 +14,10 @@
         height: 100%;
       }
       .person {
-        width: 50vw;
-        height: 50vw;
+        max-width: 90vw;
+        max-height: 90vw;
+        width: 70vh;
+        height: 70vh;
         /* center in view port*/
         position: fixed;
         top: 50%;
@@ -23,18 +26,233 @@
       }
       .person img {
         width: 100%;
+        top: 0;
+        position: absolute;
+        border-radius: 5vh;
       }
-      .person h1, .person h2, .person h3 {
+      h1, h2, h3 {
+        width: 100vw;
+        font-size: 6vh;
+        height: 12vh;
         text-align: center;
+        display: block;
+        position: fixed;
+        overflow: visible;
+        font-family: Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+      h1 {
+        top: 3vh;
+      }
+      h2 {
+        bottom: 0;
       }
     </style>
   </head>
   <body>
+    <h1 id="info"></h1>
     <div class="person">
-      <h1>Info text on top</h1>
-      <img src="url/to/the/image"/>
-      <h2>Name</h2>
-      <h3>Email</h3>
+      <img id="photo"/>
+      <!--
+      <h3 id="next"></h3>
+      -->
     </div>
+    <h2 id="name"></h2>
   </body>
+  <script>
+    var willReload = false;
+    function updateInfo() {
+      var today = new Date();
+      var todayString = today.toISOString();
+      console.log("Today: "+todayString);
+      console.log("Today Timestamp: "+today.getTime());
+      var todayDateTime = todayString.split("T"); //split date from time
+      var todayDate = todayDateTime[0].split("-"); //split yyyy mm dd
+      var todayHours = today.getHours();
+      var todayMinutes = today.getMinutes();
+      var name = "";
+      var info = "";
+      var timeToRefresh = 1800000;
+      if (!willReload) {
+        willReload = true;
+        setTimeout(function(){location.reload()}, (23-todayHours+4)*3600000+(59-todayMinutes)*60000+(59-today.getSeconds())*1000); // reload every midnight
+      }
+
+      console.log(response.items[0]);
+      for (var i = 0; i < response.items.length; i++) {
+        console.log(i);
+        var item = response.items[i];
+        var allDay = item.start.date? true : false;
+        var startDT = allDay ? item.start.date : item.start.dateTime;
+        var dateTime = startDT.split("T"); //split date from time
+        var date = dateTime[0].split("-"); //split yyyy mm dd
+        var startYear = date[0];
+        var startMonth = monthString(date[1]);
+        var startDay = date[2];
+        var startHour = dateTime[1].split(":")[0];
+        var startMinute = dateTime[1].split(":")[1];
+        var startDateISO = new Date(startMonth + " " + startDay + ", " + startYear + " "+startHour+":"+startMinute+":00"); // not used
+        var startHour = dateTime[1].split(":")[0];
+        var endDT = allDay ? item.end.date : item.end.dateTime;
+        var endHour = endDT.split("T")[1].split(":")[0];
+        var endMinute = endDT.split("T")[1].split(":")[1];
+        var endDateISO = new Date(startMonth + " " + startDay + ", " + startYear + " "+endHour+":"+endMinute+":00"); // not used
+        var upcomingDate = "on " + startMonth + " " + startDay;
+        var upcomingTime = (parseInt(startHour-1)%12+1) + ":" + startMinute + " " + AmPm(startHour);
+        if (startHour == "12" && startMinute == "00") {
+          upcomingTime = "noon"
+        }
+        console.log(item.summary);
+        console.log("start: "+startDT)
+        console.log("start: "+startDateISO.getTime());
+        console.log("end: "+endDT)
+        console.log("end: "+endDateISO.getTime());
+        
+        if( !allDay ){
+          var isCurrent = true;
+          if (todayDate[0] != date[0]) {  // check year
+            isCurrent = false;
+          } else if (todayDate[1] != date[1]) { // check month
+            isCurrent = false;
+          } else {
+            if (todayDate[2] != date[2]) {  // check day
+              isCurrent = false;
+              if (parseInt(todayDate[2])+1 == parseInt(date[2])) {  // check tomorrow
+                upcomingDate = "tomorrow";
+              }
+            } else {
+              upcomingDate = "today";
+              if (todayHours < startHour || todayHours > endHour) { // check hour
+                isCurrent = false;
+              } else if (todayHours == startHour && todayMinutes < startMinute) { //  before startTime
+                isCurrent = false;
+              } else if (todayHours == endHour && todayMinutes >= endMinute) {  // after endTime
+                isCurrent = false;
+              }
+            }
+          }
+          if (isCurrent) {
+            console.log("isCurrent: True");
+            name = item.summary;
+            info = "The Lab Monitor on duty";
+            document.getElementById("photo").src = "data/photos/"+name+".jpg";
+            timeToRefresh = endDateISO.getTime()-today.getTime();
+            if (timeToRefresh > 1800000) {
+              timeToRefresh = 1800000;
+            }
+          } else {
+            console.log("isCurrent: False");
+            if (i == 0) {
+              info = "Sorry, there are currently no Lab Monitors on duty";
+              document.getElementById("photo").src = "data/photos/Nobody.jpg";
+              name = item.summary+" will be on duty from " + upcomingTime + " " + upcomingDate;
+              timeToRefresh = startDateISO.getTime()-today.getTime();
+              if (timeToRefresh > 1800000) {
+                timeToRefresh = 1800000;
+              }
+            }
+          }
+        }
+      }
+
+      setTimeout(makeApiCall, timeToRefresh);
+      document.getElementById("info").innerHTML = info;
+      document.getElementById("name").innerHTML = name;
+    }
+
+    var clientId = '994924439111-ghkfui3q88qfec9jeoj69o7ogcnl7824.apps.googleusercontent.com'; //choose web app client Id, redirect URI and Javascript origin set to http://localhost
+    var apiKey = 'AIzaSyCKj9NOc2xCbE1cI6XrwqnDQNfg7sCXwIQ'; //choose public apiKey, any IP allowed (leave blank the allowed IP boxes in Google Dev Console)
+    var userEmail = "nyu.edu_4h0j8ra7ljn6ir91ptj5hcjb3c@group.calendar.google.com"; //your calendar Id
+    var userTimeZone = "Abu_Dhabi"; //example "Rome" "Los_Angeles" ecc...
+    var maxRows = 2; //events to shown
+      
+    var scopes = 'https://www.googleapis.com/auth/calendar';
+
+    var response;
+      
+    //--------------------- Add a 0 to numbers
+    function padNum(num) {
+      if (num <= 9) {
+        return "0" + num;
+      }
+      return num;
+    }
+    //--------------------- end  
+      
+    //--------------------- From 24h to Am/Pm
+    function AmPm(num) {
+      if (num < 12) { return "am"; }
+      return "pm";
+    }
+    //--------------------- end  
+
+    //--------------------- num Month to String
+    function monthString(num) {
+         if (num === "01") { return "Jan"; } 
+      else if (num === "02") { return "Feb"; } 
+      else if (num === "03") { return "Mar"; } 
+      else if (num === "04") { return "Apr"; } 
+      else if (num === "05") { return "Mar"; } 
+      else if (num === "06") { return "Jun"; } 
+      else if (num === "07") { return "Jul"; } 
+      else if (num === "08") { return "Aug"; } 
+      else if (num === "09") { return "Sep"; } 
+      else if (num === "10") { return "Oct"; } 
+      else if (num === "11") { return "Nov"; } 
+      else if (num === "12") { return "Dec"; }
+    }
+    //--------------------- end
+
+    //--------------------- from num to day of week
+    function dayString(num){
+         if (num == "1") { return "Mon" }
+      else if (num == "2") { return "Tue" }
+      else if (num == "3") { return "Wed" }
+      else if (num == "4") { return "Thu" }
+      else if (num == "5") { return "Fri" }
+      else if (num == "6") { return "Sat" }
+      else if (num == "0") { return "Sun" }
+    }
+    //--------------------- end
+
+    //--------------------- client CALL
+    function handleClientLoad() {
+      gapi.client.setApiKey(apiKey);
+      checkAuth();
+    }
+    //--------------------- end
+
+    //--------------------- check Auth
+    function checkAuth() {
+      gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: true}, handleAuthResult);
+    }
+    //--------------------- end
+
+    //--------------------- handle result and make CALL
+    function handleAuthResult(authResult) {
+      if (authResult) {
+        makeApiCall();
+      }
+    }
+    //--------------------- end
+
+    //--------------------- API CALL itself
+    function makeApiCall() {
+      var today = new Date(); //today date
+      gapi.client.load('calendar', 'v3', function () {
+        var request = gapi.client.calendar.events.list({
+          'calendarId' : userEmail,
+          'timeZone' : userTimeZone, 
+          'singleEvents': true, 
+          'timeMin': today.toISOString(), //gathers only events not happened yet
+          'maxResults': maxRows, 
+          'orderBy': 'startTime'});
+      request.execute(function (resp) {
+        response = resp;
+        updateInfo();
+        });
+      });
+    }
+    //--------------------- end
+  </script>
+  <script src='https://apis.google.com/js/client.js?onload=handleClientLoad'></script>
 </html>
