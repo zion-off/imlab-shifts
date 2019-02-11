@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>IM Lab Monitor Shifts</title>
+    <title>IM Lab Assistant Shifts</title>
     <meta charset="UTF-8">
     <style>
       * {
@@ -57,6 +57,7 @@
       -->
     </div>
     <h2 id="name"></h2>
+    <h3 id="laser"></h3>
   </body>
   <script>
     var willReload = false;
@@ -71,6 +72,7 @@
       var todayMinutes = today.getMinutes();
       var name = "";
       var info = "";
+      var laser = "";
       var timeToRefresh = 1800000;
       if (!willReload) {
         willReload = true;
@@ -133,7 +135,7 @@
           if (isCurrent) {
             console.log("isCurrent: True");
             name = item.summary;
-            info = "The Lab Monitor on duty";
+            info = "The Lab Assistant on duty";
             document.getElementById("photo").src = "data/photos/"+name+".jpg";
             timeToRefresh = endDateISO.getTime()-today.getTime();
             if (timeToRefresh > 1800000) {
@@ -142,7 +144,7 @@
           } else {
             console.log("isCurrent: False");
             if (i == 0) {
-              info = "Sorry, there are currently no Lab Monitors on duty";
+              info = "Sorry, there are currently no Lab Assistants on duty";
               document.getElementById("photo").src = "data/photos/Nobody.jpg";
               name = item.summary+" will be on duty from " + upcomingTime + " " + upcomingDate;
               timeToRefresh = startDateISO.getTime()-today.getTime();
@@ -154,20 +156,24 @@
         }
       }
 
+      laser = responseLaserCutter.items[0].summary;
       setTimeout(makeApiCall, timeToRefresh);
       document.getElementById("info").innerHTML = info;
       document.getElementById("name").innerHTML = name;
+      document.getElementById("laser").innerHTML = laser;
     }
 
     var clientId = '994924439111-ghkfui3q88qfec9jeoj69o7ogcnl7824.apps.googleusercontent.com'; //choose web app client Id, redirect URI and Javascript origin set to http://localhost
     var apiKey = 'AIzaSyCKj9NOc2xCbE1cI6XrwqnDQNfg7sCXwIQ'; //choose public apiKey, any IP allowed (leave blank the allowed IP boxes in Google Dev Console)
     var userEmail = "nyu.edu_4h0j8ra7ljn6ir91ptj5hcjb3c@group.calendar.google.com"; //your calendar Id
+    var laserCutter = "nyu.edu_s969h7vjprfkp52hm13cr185tc@group.calendar.google.com"; //your calendar Id
     var userTimeZone = "Abu_Dhabi"; //example "Rome" "Los_Angeles" ecc...
     var maxRows = 2; //events to shown
       
     var scopes = 'https://www.googleapis.com/auth/calendar';
 
     var response;
+    var responseLaserCutter;
       
     //--------------------- Add a 0 to numbers
     function padNum(num) {
@@ -239,6 +245,13 @@
     function makeApiCall() {
       var today = new Date(); //today date
       gapi.client.load('calendar', 'v3', function () {
+        var requestLaserCutter = gapi.client.calendar.events.list({
+          'calendarId' : laserCutter,
+          'timeZone' : userTimeZone, 
+          'singleEvents': true, 
+          'timeMin': today.toISOString(), //gathers only events not happened yet
+          'maxResults': maxRows, 
+          'orderBy': 'startTime'});
         var request = gapi.client.calendar.events.list({
           'calendarId' : userEmail,
           'timeZone' : userTimeZone, 
@@ -246,9 +259,12 @@
           'timeMin': today.toISOString(), //gathers only events not happened yet
           'maxResults': maxRows, 
           'orderBy': 'startTime'});
-      request.execute(function (resp) {
-        response = resp;
-        updateInfo();
+        request.execute(function (resp) {
+          response = resp;
+          requestLaserCutter.execute(function (resp) {
+            responseLaserCutter = resp;
+            updateInfo();
+          });
         });
       });
     }
