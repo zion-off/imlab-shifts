@@ -30,7 +30,14 @@
         position: absolute;
         border-radius: 5vh;
       }
+      #photo-next {
+        width: 40%;
+        right: -45%;
+        top: auto;
+        bottom: 0;
+      }
       h1, h2, h3 {
+        white-space: nowrap;
         width: 100vw;
         font-size: 6vh;
         height: 12vh;
@@ -46,17 +53,23 @@
       h2 {
         bottom: 0;
       }
+      h3 {
+        width: 40%;
+        left: 105%;
+        height: auto;
+        bottom: 43%;
+        font-size: 3vh;
+      }
     </style>
   </head>
   <body>
-    <h1 id="info"></h1>
+    <h1 id="text-top"></h1>
     <div class="person">
       <img id="photo"/>
-      <!--
-      <h3 id="next"></h3>
-      -->
+      <img id="photo-next"/>
+      <h3 id="text-next"></h3>
     </div>
-    <h2 id="name"></h2>
+    <h2 id="text-bottom"></h2>
   </body>
   <script>
     var willReload = false;
@@ -69,8 +82,9 @@
       var todayDate = todayDateTime[0].split("-"); //split yyyy mm dd
       var todayHours = today.getHours();
       var todayMinutes = today.getMinutes();
-      var name = "";
-      var info = "";
+      var text_bottom = "";
+      var text_next = "";
+      var text_top = "";
       var timeToRefresh = 1800000;
       if (!willReload) {
         willReload = true;
@@ -132,9 +146,9 @@
           }
           if (isCurrent) {
             console.log("isCurrent: True");
-            name = item.summary;
-            info = "The Lab Assistant on duty";
-            document.getElementById("photo").src = "data/photos/"+name+".jpg";
+            text_bottom = item.summary;
+            text_top = "The Lab Assistant on duty";
+            document.getElementById("photo").src = "data/photos/"+text_bottom+".jpg";
             timeToRefresh = endDateISO.getTime()-today.getTime();
             if (timeToRefresh > 1800000) {
               timeToRefresh = 1800000;
@@ -142,21 +156,26 @@
           } else {
             console.log("isCurrent: False");
             if (i == 0) {
-              info = "Sorry, there are currently no Lab Assistants on duty";
+              text_top = "Sorry, there are currently no Lab Assistants on duty";
               document.getElementById("photo").src = "data/photos/Nobody.jpg";
-              name = item.summary+" will be on duty from " + upcomingTime + " " + upcomingDate;
+              text_bottom = item.summary+" will be on duty from " + upcomingTime + " " + upcomingDate;
               timeToRefresh = startDateISO.getTime()-today.getTime();
               if (timeToRefresh > 1800000) {
                 timeToRefresh = 1800000;
               }
+            }
+            if (!text_next) {
+              document.getElementById("photo-next").src = "data/photos/"+item.summary+".jpg";
+              text_next = "Next: " + item.summary;
             }
           }
         }
       }
 
       setTimeout(makeApiCall, timeToRefresh);
-      document.getElementById("info").innerHTML = info;
-      document.getElementById("name").innerHTML = name;
+      document.getElementById("text-top").innerHTML = text_top;
+      document.getElementById("text-bottom").innerHTML = text_bottom;
+      document.getElementById("text-next").innerHTML = text_next;
     }
 
     var clientId = '994924439111-ghkfui3q88qfec9jeoj69o7ogcnl7824.apps.googleusercontent.com'; //choose web app client Id, redirect URI and Javascript origin set to http://localhost
