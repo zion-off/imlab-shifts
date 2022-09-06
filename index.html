@@ -16,21 +16,20 @@
       .person {
         max-width: 90vw;
         max-height: 90vw;
-        width: 70vh;
+        width: 90vw;
         height: 70vh;
         /* center in view port*/
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%,-50%);
+        display: flex;
+        justify-content: center;
       }
       .person img {
         height: 100%;
-        left:50%;
-        transform: translate(-50%, 0);
-        top: 0;
-        position: absolute;
         border-radius: 5vh;
+        margin: 0 2vh;
       }
       h1, h2, h3 {
         width: 100vw;
@@ -52,7 +51,7 @@
   </head>
   <body>
     <h1 id="info"></h1>
-    <div class="person">
+    <div class="person" id="person">
       <img id="photo"/>
       <!--
       <h3 id="next"></h3>
@@ -73,7 +72,7 @@
       var todayMinutes = today.getMinutes();
       var name = "";
       var info = "";
-      var timeToRefresh = 1800000;
+      var timeToRefresh = 300000;
       if (!willReload) {
         willReload = true;
         setTimeout(function(){location.reload()}, (23-todayHours+4)*3600000+(59-todayMinutes)*60000+(59-today.getSeconds())*1000); // reload every midnight
@@ -108,6 +107,9 @@
         console.log("start: "+startDateISO.getTime());
         console.log("end: "+endDT)
         console.log("end: "+endDateISO.getTime());
+
+        let imgElem = document.createElement('img');
+        imgElem.className = "photo";
         
         if( !allDay ){
           var isCurrent = true;
@@ -136,20 +138,30 @@
             console.log("isCurrent: True");
             name = item.summary;
             info = "The Lab Assistant on duty";
-            document.getElementById("photo").src = "data/photos/"+name+".jpg";
+//            document.getElementById("photo").src = "data/photos/"+name+".jpg";
+            imgElem.src = "data/photos/"+name+".jpg";
+            if (i === 0) {
+              document.getElementById("person").innerHTML = "";
+              document.getElementById("name").innerHTML = name;
+            } else {
+              document.getElementById("name").innerHTML += " & " + name;
+            }
+            document.getElementById("person").appendChild(imgElem);
             timeToRefresh = endDateISO.getTime()-today.getTime();
-            if (timeToRefresh > 1800000) {
-              timeToRefresh = 1800000;
+            if (timeToRefresh > 300000) {
+              timeToRefresh = 300000;
             }
           } else {
             console.log("isCurrent: False");
             if (i == 0) {
               info = "Sorry, there are currently no Lab Assistants on duty";
-              document.getElementById("photo").src = "data/photos/Nobody.jpg";
+              imgElem.src = "data/photos/Nobody.jpg";
+              document.getElementById("person").appendChild(imgElem);
               name = item.summary+" will be on duty from " + upcomingTime + " " + upcomingDate;
+              document.getElementById("name").innerHTML = name;
               timeToRefresh = startDateISO.getTime()-today.getTime();
-              if (timeToRefresh > 1800000) {
-                timeToRefresh = 1800000;
+              if (timeToRefresh > 300000) {
+                timeToRefresh = 300000;
               }
             }
           }
@@ -158,14 +170,13 @@
 
       setTimeout(makeApiCall, timeToRefresh);
       document.getElementById("info").innerHTML = info;
-      document.getElementById("name").innerHTML = name;
     }
 
     var clientId = '994924439111-ghkfui3q88qfec9jeoj69o7ogcnl7824.apps.googleusercontent.com'; //choose web app client Id, redirect URI and Javascript origin set to http://localhost
     var apiKey = 'AIzaSyCKj9NOc2xCbE1cI6XrwqnDQNfg7sCXwIQ'; //choose public apiKey, any IP allowed (leave blank the allowed IP boxes in Google Dev Console)
     var userEmail = "nyu.edu_4h0j8ra7ljn6ir91ptj5hcjb3c@group.calendar.google.com"; //your calendar Id
     var userTimeZone = "Abu_Dhabi"; //example "Rome" "Los_Angeles" ecc...
-    var maxRows = 2; //events to shown
+    var maxRows = 10; // number of events to check
       
     var scopes = 'https://www.googleapis.com/auth/calendar';
 
