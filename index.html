@@ -137,13 +137,13 @@
           if (isCurrent) {
             console.log("isCurrent: True");
             name = item.summary;
-            info = "The Lab Assistant on duty";
-//            document.getElementById("photo").src = "data/photos/"+name+".jpg";
             imgElem.src = "data/photos/"+name+".jpg";
             if (i === 0) {
+              info = "The Lab Assistant on duty";
               document.getElementById("person").innerHTML = "";
               document.getElementById("name").innerHTML = name;
             } else {
+              info = "The Lab Assistants on duty";
               document.getElementById("name").innerHTML += " & " + name;
             }
             document.getElementById("person").appendChild(imgElem);
@@ -153,9 +153,10 @@
             }
           } else {
             console.log("isCurrent: False");
-            if (i == 0) {
+            if (i === 0) {
               info = "Sorry, there are currently no Lab Assistants on duty";
               imgElem.src = "data/photos/Nobody.jpg";
+              document.getElementById("person").innerHTML = "";
               document.getElementById("person").appendChild(imgElem);
               name = item.summary+" will be on duty from " + upcomingTime + " " + upcomingDate;
               document.getElementById("name").innerHTML = name;
