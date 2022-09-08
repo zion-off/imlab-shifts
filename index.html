@@ -147,7 +147,7 @@
               document.getElementById("name").innerHTML += " & " + name;
             }
             document.getElementById("person").appendChild(imgElem);
-            timeToRefresh = endDateISO.getTime()-today.getTime();
+            timeToRefresh = endDateISO.getTime()-today.getTime() + 5000;
             if (timeToRefresh > 300000) {
               timeToRefresh = 300000;
             }
@@ -160,7 +160,7 @@
               document.getElementById("person").appendChild(imgElem);
               name = item.summary+" will be on duty from " + upcomingTime + " " + upcomingDate;
               document.getElementById("name").innerHTML = name;
-              timeToRefresh = startDateISO.getTime()-today.getTime();
+              timeToRefresh = startDateISO.getTime()-today.getTime() + 5000;
               if (timeToRefresh > 300000) {
                 timeToRefresh = 300000;
               }
