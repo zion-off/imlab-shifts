@@ -62,19 +62,38 @@
   </body>
   <script>
     // fun sticker at random location
-    var stickerWidth = 20;
-    var stickerElement = document.getElementById("sticker");
-    stickerElement.style.position = "fixed";
-    stickerElement.style.zIndex = "100";
-    stickerElement.style.width = 20 + "vw";
-    var maxX = 100-stickerWidth;
-    var maxY = 100*window.innerHeight/window.innerWidth-stickerWidth;
-    var leftPos = Math.random()*maxX;
-    var topPos = Math.random()*maxY;
-    stickerElement.style.left = leftPos+"vw";
-    stickerElement.style.top = topPos+"vw";
-    var speedX = Math.random()*0.5;
-    var speedY = Math.random()*0.5;
+    var stickerWidth;
+    var stickerElement;
+    var maxX;
+    var maxY;
+    var leftPos;
+    var topPos;
+    var speedX;
+    var speedY;
+
+    function setupSticker() {
+      stickerWidth = 20;
+      stickerElement = document.getElementById("sticker");
+      maxX = 100-stickerWidth;
+      maxY = 100*window.innerHeight/window.innerWidth-stickerWidth;
+      leftPos = Math.random()*maxX;
+      topPos = Math.random()*maxY;
+      speedX = Math.random()*0.5;
+      speedY = Math.random()*0.5;
+      stickerElement.style.position = "fixed";
+      stickerElement.style.zIndex = "100";
+      stickerElement.style.width = 20 + "vw";
+      stickerElement.style.left = leftPos+"vw";
+      stickerElement.style.top = topPos+"vw";
+    }
+
+    document.body.onload = function() {
+      setupSticker();
+
+      requestAnimationFrame(animateSticker);
+    }
+
+    document.body.onresize = setupSticker;
 
     function animateSticker(timestamp) {
       leftPos += speedX;
@@ -89,7 +108,6 @@
       stickerElement.style.top = topPos+"vw";
       requestAnimationFrame(animateSticker);
     }
-    requestAnimationFrame(animateSticker);
 
     var willReload = false;
     function updateInfo() {
