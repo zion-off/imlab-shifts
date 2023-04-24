@@ -47,13 +47,6 @@
       h2 {
         bottom: 0;
       }
-      img#sticker {
-        position: fixed;
-        z-index: 100;
-        width: 20vw;
-        top: 0;
-        left: 0;
-      }
     </style>
   </head>
   <body>
@@ -68,9 +61,35 @@
     <img id="sticker" src="data/aaron-shirt-gif.gif">
   </body>
   <script>
-    var stickerElem = document.getElementById("sticker");
-    stickerElem.style.left = (Math.random()*80)+"vw";
-    stickerElem.style.top = (Math.random()*80)+"vh";
+    // fun sticker at random location
+    var stickerWidth = 20;
+    var stickerElement = document.getElementById("sticker");
+    stickerElement.style.position = "fixed";
+    stickerElement.style.zIndex = "100";
+    stickerElement.style.width = 20 + "vw";
+    var maxX = 100-stickerWidth;
+    var maxY = 100*window.innerHeight/window.innerWidth-stickerWidth;
+    var leftPos = Math.random()*maxX;
+    var topPos = Math.random()*maxY;
+    stickerElement.style.left = leftPos+"vw";
+    stickerElement.style.top = topPos+"vw";
+    var speedX = Math.random()*0.5;
+    var speedY = Math.random()*0.5;
+
+    function animateSticker(timestamp) {
+      leftPos += speedX;
+      topPos += speedY;
+      if (leftPos < -stickerWidth/4 || leftPos > maxX + stickerWidth/4) {
+        speedX = -speedX;
+      }
+      if (topPos < 0 || topPos > maxY) {
+        speedY = -speedY;
+      }
+      stickerElement.style.left = leftPos+"vw";
+      stickerElement.style.top = topPos+"vw";
+      requestAnimationFrame(animateSticker);
+    }
+    requestAnimationFrame(animateSticker);
 
     var willReload = false;
     function updateInfo() {
