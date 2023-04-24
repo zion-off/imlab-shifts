@@ -47,6 +47,13 @@
       h2 {
         bottom: 0;
       }
+      img#sticker {
+        position: fixed;
+        z-index: 100;
+        width: 20vw;
+        top: 0;
+        left: 0;
+      }
     </style>
   </head>
   <body>
@@ -58,8 +65,13 @@
       -->
     </div>
     <h2 id="name"></h2>
+    <img id="sticker" src="data/aaron-shirt-gif.gif">
   </body>
   <script>
+    var stickerElem = document.getElementById("sticker");
+    stickerElem.style.left = (Math.random()*80)+"vw";
+    stickerElem.style.top = (Math.random()*80)+"vh";
+
     var willReload = false;
     function updateInfo() {
       var today = new Date();
