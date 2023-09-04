@@ -58,56 +58,56 @@
       -->
     </div>
     <h2 id="name"></h2>
-    <img id="sticker" src="data/aaron-shirt-gif.gif">
+    <!-- <img id="sticker" src="data/aaron-shirt-gif.gif"> -->
   </body>
   <script>
     // fun sticker at random location
-    var stickerWidth;
-    var stickerElement;
-    var maxX;
-    var maxY;
-    var leftPos;
-    var topPos;
-    var speedX;
-    var speedY;
+    // var stickerWidth;
+    // var stickerElement;
+    // var maxX;
+    // var maxY;
+    // var leftPos;
+    // var topPos;
+    // var speedX;
+    // var speedY;
 
-    function setupSticker() {
-      stickerWidth = 20;
-      stickerElement = document.getElementById("sticker");
-      maxX = 100-stickerWidth;
-      maxY = 100*window.innerHeight/window.innerWidth-stickerWidth;
-      leftPos = Math.random()*maxX;
-      topPos = Math.random()*maxY;
-      speedX = Math.random()*0.5;
-      speedY = Math.random()*0.5;
-      stickerElement.style.position = "fixed";
-      stickerElement.style.zIndex = "100";
-      stickerElement.style.width = 20 + "vw";
-      stickerElement.style.left = leftPos+"vw";
-      stickerElement.style.top = topPos+"vw";
-    }
+    // function setupSticker() {
+    //   stickerWidth = 20;
+    //   stickerElement = document.getElementById("sticker");
+    //   maxX = 100-stickerWidth;
+    //   maxY = 100*window.innerHeight/window.innerWidth-stickerWidth;
+    //   leftPos = Math.random()*maxX;
+    //   topPos = Math.random()*maxY;
+    //   speedX = Math.random()*0.5;
+    //   speedY = Math.random()*0.5;
+    //   stickerElement.style.position = "fixed";
+    //   stickerElement.style.zIndex = "100";
+    //   stickerElement.style.width = 20 + "vw";
+    //   stickerElement.style.left = leftPos+"vw";
+    //   stickerElement.style.top = topPos+"vw";
+    // }
 
-    document.body.onload = function() {
-      setupSticker();
+    // document.body.onload = function() {
+    //   setupSticker();
 
-      requestAnimationFrame(animateSticker);
-    }
+    //   requestAnimationFrame(animateSticker);
+    // }
 
-    document.body.onresize = setupSticker;
+    // document.body.onresize = setupSticker;
 
-    function animateSticker(timestamp) {
-      leftPos += speedX;
-      topPos += speedY;
-      if (leftPos < -stickerWidth/4 || leftPos > maxX + stickerWidth/4) {
-        speedX = -speedX;
-      }
-      if (topPos < 0 || topPos > maxY) {
-        speedY = -speedY;
-      }
-      stickerElement.style.left = leftPos+"vw";
-      stickerElement.style.top = topPos+"vw";
-      requestAnimationFrame(animateSticker);
-    }
+    // function animateSticker(timestamp) {
+    //   leftPos += speedX;
+    //   topPos += speedY;
+    //   if (leftPos < -stickerWidth/4 || leftPos > maxX + stickerWidth/4) {
+    //     speedX = -speedX;
+    //   }
+    //   if (topPos < 0 || topPos > maxY) {
+    //     speedY = -speedY;
+    //   }
+    //   stickerElement.style.left = leftPos+"vw";
+    //   stickerElement.style.top = topPos+"vw";
+    //   requestAnimationFrame(animateSticker);
+    // }
 
     var willReload = false;
     function updateInfo() {
@@ -222,9 +222,9 @@
       document.getElementById("info").innerHTML = info;
     }
 
-    var clientId = '994924439111-ghkfui3q88qfec9jeoj69o7ogcnl7824.apps.googleusercontent.com'; //choose web app client Id, redirect URI and Javascript origin set to http://localhost
-    var apiKey = 'AIzaSyCKj9NOc2xCbE1cI6XrwqnDQNfg7sCXwIQ'; //choose public apiKey, any IP allowed (leave blank the allowed IP boxes in Google Dev Console)
-    var userEmail = "nyu.edu_4h0j8ra7ljn6ir91ptj5hcjb3c@group.calendar.google.com"; //your calendar Id
+    var clientId = '387396770212-kqv1e9vsgsf825sj07iuul2n4q4ftaod.apps.googleusercontent.com'; //choose web app client Id, redirect URI and Javascript origin set to http://localhost
+    var apiKey = 'AIzaSyDmayF_f5_xpePRRYCt6nRqeTMSl4AZArc'; //choose public apiKey, any IP allowed (leave blank the allowed IP boxes in Google Dev Console)
+    var userEmail = "c_aee0c69e3e2f0330da589902442656a0e7e2e451a38bf11b1f26ebc816f1aa51@group.calendar.google.com"; //your calendar Id
     var userTimeZone = "Abu_Dhabi"; //example "Rome" "Los_Angeles" ecc...
     var maxRows = 10; // number of events to check
       
